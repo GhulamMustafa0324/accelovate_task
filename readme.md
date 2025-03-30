@@ -1,97 +1,101 @@
-# Job Finder API
+# Job Scraper with LLM-Powered Ranking
 
-This project is a Job Finder API that accepts job search criteria from the user, fetches job listings from online sources, and returns the best match based on semantic relevance. The API is built using FastAPI and leverages open-source models for natural language processing.
+## Overview
+This project is a job scraper that fetches job listings from LinkedIn, Indeed, and Glassdoor using Apify Actors. It also leverages a large language model (LLM) for job relevance ranking to help users find the most suitable job listings based on their search criteria. The API is built using FastAPI for efficient request handling.
 
-## Project Structure
-
-```
-job_finder/
- ├── main.py
- ├── models.py
- ├── scrapers.py
- ├── llm_helpers.py
- ├── relevance.py
- ├── .gitignore
- ├── requirements.txt
- └── README.md
-```
-
-- **main.py**: The entry point of the FastAPI application.
-- **models.py**: Defines Pydantic models for request and response data.
-- **scrapers.py**: Contains scraper classes for fetching job listings (Indeed is implemented; others can be added).
-- **llm_helpers.py**: Uses Hugging Face’s SmolLM2-1.7B-Instruct model to format user input into search keywords.
-- **relevance.py**: Ranks job posts based on semantic similarity using Sentence Transformers.
-- **.gitignore**: Specifies files and directories to ignore in Git.
-- **requirements.txt**: Lists project dependencies.
-- **README.md**: This file.
+## Features
+- **Scraping Job Listings**: Uses Apify Actors to fetch jobs from LinkedIn, Indeed, and Glassdoor.
+- **Job Relevance Ranking**: Employs Google's Gemma 2 LLM to rank jobs based on similarity to user search queries.
+- **FastAPI Integration**: Provides a RESTful API for querying jobs and receiving ranked results.
+- **Logging & Debugging**: Implements structured logging for debugging and performance tracking.
+- **Configurable & Extensible**: Uses environment variables for API tokens and other configurations.
+- **Customizable Search Criteria**: Users can provide specific keywords, experience levels, and locations.
 
 ## Installation
 
-1. **Clone the repository:**
+### Prerequisites
+Ensure you have the following installed:
+- Python 3.8+
+- pip
+- Virtual environment (optional but recommended)
+- CUDA-compatible GPU (for better performance with LLMs)
 
-   ```bash
-   git clone https://your-repo-url.git
-   cd job_finder
+### Setup
+1. Clone this repository:
+   ```sh
+   git clone https://github.com/GhulamMustafa0324/accelovate_task.git
+   cd accelovate_task
    ```
 
-2. **Create a virtual environment:**
-
-   ```bash
+2. Create a virtual environment and activate it:
+   ```sh
    python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
 
-3. **Activate the virtual environment:**
-
-   - **Linux/Mac:**
-     ```bash
-     source venv/bin/activate
-     ```
-   - **Windows (PowerShell):**
-     ```powershell
-     venv\Scripts\activate
-     ```
-
-4. **Install dependencies:**
-
-   ```bash
+3. Install dependencies:
+   ```sh
    pip install -r requirements.txt
    ```
 
+4. Set up the `.env` file with required API tokens:
+   ```ini
+   NGROK=<YOUR_NGROK_TOKEN>
+   APIFY=<YOUR_APIFY_TOKEN>
+   LINKEDIN=<YOUR_LINKEDIN_ACTOR_ID>
+   INDEED=<YOUR_INDEED_ACTOR_ID>
+   GLASSDOOR=<YOUR_GLASSDOOR_ACTOR_ID>
+   ```
+
 ## Running the API
-
 Start the FastAPI server using Uvicorn:
-
-```bash
+```sh
 uvicorn main:app --reload
 ```
-
 The API will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-## Testing the Endpoint
-
+### Testing the Endpoint
 You can test the API using the interactive Swagger UI available at:
-
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 Use a JSON payload similar to:
-
 ```json
 {
-  "position": "Full Stack Engineer",
-  "experience": "2 years",
-  "salary": "70,000 PKR to 120,000 PKR",
-  "jobNature": "onsite",
-  "location": "Peshawar, Pakistan",
-  "skills": "full stack, MERN, Node.js, Express.js, React.js, Next.js, Firebase, TailwindCSS, CSS Frameworks, Tokens handling"
+  "query": "Machine Learning Engineer",
+  "location": "Berlin, Germany",
+  "experience_level": "Entry-Level",
+  "remote": true
 }
 ```
 
-## Notes
+## Project Structure
+```
+├── main.py            # Entry point for the FastAPI application
+├── config.py          # Loads environment variables
+├── logger.py          # Configures logging
+├── models.py          # Defines data models
+├── scrapers.py        # Handles job scraping from LinkedIn, Indeed, and Glassdoor
+├── llm_helpers.py     # Uses LLM to generate formatted search queries
+├── relevance.py       # Uses LLM to rank jobs based on relevance
+├── utils.py           # Utility functions for mapping experience levels
+├── requirements.txt   # Dependencies
+├── .env               # API tokens (not included in repo for security)
+└── README.md          # Project documentation
+```
 
-- **Scrapers:** The Indeed scraper is implemented as an example. For platforms like LinkedIn, it is recommended to use the official API or approved methods.
-- **LLM & Embeddings:** The project uses Hugging Face’s SmolLM2-1.7B-Instruct model for keyword formatting and Sentence Transformers for semantic similarity ranking.
-- **Extensibility:** The project is structured using object-oriented principles to make it easy to add more sources or improve the relevance ranking logic.
+## LLM-Powered Ranking
+The `relevance.py` module utilizes the `google/gemma-2-2b-it` model to assess job relevance based on the search criteria provided by the user. The model extracts job keywords and assigns similarity scores to rank listings.
+
+## Logging
+The project includes structured logging via `logger.py` to keep track of operations, making debugging easier.
+
+## Contributing
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature-name`).
+3. Commit your changes (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature-name`).
+5. Create a Pull Request.
 
 ## License
+MIT License.
 
-This project is open-source. Feel free to modify and extend it as needed.
