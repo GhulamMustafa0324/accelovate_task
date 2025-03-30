@@ -1,55 +1,73 @@
-import numpy as np
-import torch
-from sentence_transformers import SentenceTransformer
+import json
 from logger import get_logger
+from transformers import AutoTokenizer, pipeline
+import torch
 
 logger = get_logger(__name__)
 
 
-class RelevanceRanker:
+class LLMRanker:
     def __init__(self):
-        logger.info("Loading Sentence Transformer model...")
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model = SentenceTransformer("all-MiniLM-L6-v2", device=self.device)
-        logger.info(f"Model loaded on {self.device.upper()}")
-
-    def get_embedding(self, text):
-        """Generate embeddings for a given text."""
-        if not text.strip():
-            return np.zeros((384,))  # Return a zero vector if text is empty
-        logger.info(
-            f"Generating embedding for text: {text[:50]}..."
-        )  # Log first 50 chars
-        return self.model.encode(text, convert_to_numpy=True)
-
-    def cosine_similarity(self, vec1, vec2):
-        """Calculate cosine similarity between two vectors."""
-        return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+        logger.info("Loading Gemma 2 model for ranking...")
+        print("Loading Gemma 2 model for ranking...")
+        model_id = "google/gemma-2-2b-it"
+        self.pipe = pipeline(
+            "text-generation",
+            model=model_id,
+            model_kwargs={"torch_dtype": torch.bfloat16},
+            device="cuda" if torch.cuda.is_available() else "cpu",
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        logger.info("Gemma 2 model for ranking loaded successfully.")
+        print("Gemma 2 model for ranking loaded successfully.")
 
     def rank_jobs(self, jobs, search_keywords):
-        """Rank job listings based on similarity with user search criteria."""
-        if not jobs:
-            logger.warning("No job listings found to rank.")
-            return []
-
-        # Build a query string from formatted search keywords
-        query_text = (
-            f"{search_keywords.get('position', '')} {search_keywords.get('skills', '')}"
+        # Build a prompt that includes the query and the job details.
+        print(search_keywords)
+        query_text = f"{search_keywords.get('position', '')} {search_keywords.get('skills', '')} {search_keywords.get('experience', '')} {search_keywords.get('location', '')}"
+        prompt = (
+            "You are a helpful assitanct who will score the job listings against the searched job based on how similar they are and how close they match to, the scores must be in JSON and should be between 0 to 100"
+            f"Job Searched: {query_text}\n\n"
+            "Job Listings:\n"
         )
-        logger.info(f"Ranking jobs based on query: {query_text}")
+        for idx, job in enumerate(jobs, 1):
+            job_text = (
+                f"Job {idx}: {job['job_title']} at {job['company']} in {job['location']}. "
+                f"Experience required: {job['experience']}, Job Nature: {job['jobNature']}, Salary: {job['salary']}."
+            )
+            prompt += job_text + "\n"
+        prompt += "\nONLY RETURN THE JSON OBJECT WITH SCORES VALUE."
 
-        query_embedding = self.get_embedding(query_text)
+        logger.info("Generating ranking scores using LLM with revised prompt...")
+        print("Generating ranking scores using LLM with revised prompt...")
+        try:
+            outputs = self.pipe(prompt, max_new_tokens=1024)
+            print(outputs)
+            gen_text = outputs[0]["generated_text"][len(prompt) :]
+            logger.info(f"Raw LLM ranking output: {gen_text}")
+            print(f"Raw LLM ranking output: {gen_text}")
 
-        ranked_jobs = []
-        for job in jobs:
-            job_text = f"{job['job_title']} {job['company']} {job['location']} {job['experience']} {job['jobNature']}"
-            job_embedding = self.get_embedding(job_text)
-            similarity = self.cosine_similarity(query_embedding, job_embedding)
-            job["similarity"] = similarity
-            ranked_jobs.append(job)
-            logger.info(f"Job: {job['job_title']} | Similarity: {similarity:.4f}")
+            # Extract the JSON block from the generated text.
+            start = gen_text.find("{")
+            end = gen_text.rfind("}") + 1
+            json_text = gen_text[start:end]
+            print("json", json_text)
+            result = json.loads(json_text)
+            # print("result",result)
+            scores = result.get("scores", [])
+        except Exception as e:
+            logger.error(f"Failed to rank jobs using LLM: {e}")
+            print(f"Failed to rank jobs using LLM: {e}")
+            # Fallback: assign a default score of 50 for each job.
+            scores = [50] * len(jobs)
 
-        # Sort jobs in descending order of similarity
-        ranked_jobs.sort(key=lambda x: x["similarity"], reverse=True)
-        logger.info("Job ranking completed.")
+        # Assign scores to each job.
+        for i, job in enumerate(jobs):
+            job["similarity"] = scores[i] if i < len(scores) else 50
+
+        # Sort jobs by similarity score descending.
+        ranked_jobs = sorted(jobs, key=lambda x: x["similarity"], reverse=True)
+        logger.info("Job ranking via LLM completed.")
+        print("Job ranking via LLM completed.")
+        print(ranked_jobs)
         return ranked_jobs
