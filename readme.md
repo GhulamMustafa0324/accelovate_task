@@ -61,11 +61,15 @@ You can test the API using the interactive Swagger UI available at:
 Use a JSON payload similar to:
 ```json
 {
-  "query": "Machine Learning Engineer",
-  "location": "Berlin, Germany",
-  "experience_level": "Entry-Level",
-  "remote": true
+   "position": "Full Stack Engineer",
+   "experience": "2 years",
+   "salary": "70,000 PKR to 120,000 PKR",
+   "jobNature": "onsite",
+   "location": "Peshawar, Pakistan",
+   "skills": "full stack, MERN, Node.js, Express.js, React.js, Next.js, Firebase,
+   TailwindCSS, CSS Frameworks, Tokens handling"
 }
+
 ```
 
 ## Project Structure
