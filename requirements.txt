@@ -10,3 +10,4 @@ torch
 nest_asyncio 
 pyngrok 
 apify
+python-dotenv
