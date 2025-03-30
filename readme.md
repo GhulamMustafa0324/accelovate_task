@@ -59,7 +59,7 @@ Use a JSON payload similar to:
    "experience": "2 years",
    "salary": "70,000 PKR to 120,000 PKR",
    "jobNature": "onsite",
-   "location": "Peshawar, Pakistan",
+   "location": "Karachi, Pakistan",
    "skills": "full stack, MERN, Node.js, Express.js, React.js, Next.js, Firebase,
    TailwindCSS, CSS Frameworks, Tokens handling"
 }
