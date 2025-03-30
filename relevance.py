@@ -26,7 +26,8 @@ class LLMRanker:
         print(search_keywords)
         query_text = f"{search_keywords.get('position', '')} {search_keywords.get('skills', '')} {search_keywords.get('experience', '')} {search_keywords.get('location', '')}"
         prompt = (
-            "You are a helpful assitanct who will score the job listings against the searched job based on how similar they are and how close they match to, the scores must be in JSON and should be between 0 to 100"
+            "You are a helpful assitanct who will score the job listings against the searched job based on how similar they are and how close they match to, the scores must be in JSON and should be between 0 to 100 \n\n"
+            "Example: {\"scores\": [100, 90, 80]}\n\n"
             f"Job Searched: {query_text}\n\n"
             "Job Listings:\n"
         )

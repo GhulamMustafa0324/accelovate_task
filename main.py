@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from accelovate_task.models import JobSearchRequest, JobSearchResponse, JobDetail
-from accelovate_task.llm_helper import LLMHelper
-from accelovate_task.llm_ranker import LLMRanker
-from accelovate_task.job_scraper import JobScraper
+from models import JobSearchRequest, JobSearchResponse, JobDetail
+from llm_helper import LLMHelper
+from llm_ranker import LLMRanker
+from job_scraper import JobScraper
 from pyngrok import ngrok
 import nest_asyncio
 import uvicorn

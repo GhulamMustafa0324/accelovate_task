@@ -1,7 +1,7 @@
 import json
 import torch
 from transformers import pipeline, AutoTokenizer
-from accelovate_task.models import JobSearchRequest
+from models import JobSearchRequest
 from logger import get_logger
 
 logger = get_logger(__name__)
