@@ -13,12 +13,6 @@ This project is a job scraper that fetches job listings from LinkedIn, Indeed, a
 
 ## Installation
 
-### Prerequisites
-Ensure you have the following installed:
-- Python 3.8+
-- pip
-- Virtual environment (optional but recommended)
-- CUDA-compatible GPU (for better performance with LLMs)
 
 ### Setup
 1. Clone this repository:
@@ -79,6 +73,7 @@ Use a JSON payload similar to:
 ├── logger.py          # Configures logging
 ├── models.py          # Defines data models
 ├── scrapers.py        # Handles job scraping from LinkedIn, Indeed, and Glassdoor
+├── colab/accelovate.ipynb # A notebook which can be directly run from google colab
 ├── llm_helpers.py     # Uses LLM to generate formatted search queries
 ├── relevance.py       # Uses LLM to rank jobs based on relevance
 ├── utils.py           # Utility functions for mapping experience levels
@@ -93,12 +88,6 @@ The `relevance.py` module utilizes the `google/gemma-2-2b-it` model to assess jo
 ## Logging
 The project includes structured logging via `logger.py` to keep track of operations, making debugging easier.
 
-## Contributing
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-name`).
-5. Create a Pull Request.
 
 ## License
 MIT License.
