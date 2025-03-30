@@ -7,3 +7,6 @@ transformers
 sentence-transformers
 numpy
 torch
+nest_asyncio 
+pyngrok 
+apify
