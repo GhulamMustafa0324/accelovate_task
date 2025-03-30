@@ -33,11 +33,12 @@ async def search_jobs(search_request: JobSearchRequest):
         scraper = JobScraper(formatted_keywords)
 
         # You can enable indeed_jobs if needed
-        # indeed_jobs = scraper.fetch_indeed_jobs()
+        indeed_jobs = scraper.fetch_indeed_jobs()
         linkedin_jobs = scraper.fetch_linkedin_jobs()
+        glassdoor_jobs = scraper.fetch_glassdoor_jobs()
 
         # For this example, we use only LinkedIn jobs
-        all_jobs = linkedin_jobs
+        all_jobs = linkedin_jobs + indeed_jobs + glassdoor_jobs
         logger.info(f"Total jobs fetched: {len(all_jobs)}")
         print(f"Total jobs fetched: {len(all_jobs)}")
 

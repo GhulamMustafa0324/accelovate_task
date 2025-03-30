@@ -11,6 +11,7 @@ logger = get_logger(__name__)
 client = ApifyClient(APIFY_TOKEN)
 logger.info("Apify Client initialized.")
 
+
 class JobScraper:
     def __init__(self, search_criteria: dict):
         self.search_criteria = search_criteria
@@ -86,8 +87,8 @@ class JobScraper:
 
         # Build the dynamic run input for Indeed.
         run_input = {
-            "job": self.search_criteria.get("position", ""),
-            "country": self.search_criteria.get("country", "united states"),
+            "job": [self.search_criteria.get("position", "")],
+            "country": self.search_criteria.get("country", "united states").lower(),
             "experienceLevel": experience_level,
             "sortType": self.search_criteria.get("jobNature", None),
             "city": self.search_criteria.get("city", ""),
@@ -138,9 +139,7 @@ class JobScraper:
             "includeNoSalaryJob": True,
             "minSalary": salary_value,
             "maxSalary": salary_value,
-            "fromAge": 30,
-            "jobType": self.search_criteria.get("jobNature", ""),
-            "radius": 50,
+            "fromAge": "30",
             "proxy": {"useApifyProxy": True},
         }
         logger.info(
