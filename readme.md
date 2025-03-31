@@ -41,6 +41,11 @@ This project is a job scraper that fetches job listings from LinkedIn, Indeed, a
    GLASSDOOR=<YOUR_GLASSDOOR_ACTOR_ID>
    ```
 
+5. The scrapers used are:
+   - [LinkedIn Jobs Scraper](https://apify.com/bebity/linkedin-jobs-scraper)
+   - [Indeed Job Scraper](https://apify.com/newbs/indeed-job-scraper)
+   - [Glassdoor Jobs Scraper](https://apify.com/bebity/glassdoor-jobs-scraper)
+
 ## Running the API
 Start the FastAPI server using Uvicorn:
 ```sh
